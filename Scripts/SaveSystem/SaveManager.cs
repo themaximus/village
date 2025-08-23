@@ -12,10 +12,10 @@ public class SaveManager : MonoBehaviour
 
     private const string SaveFileName = "savegame.json";
 
-    // Глобальное хранилище состояний из файла
+    // Р“Р»РѕР±Р°Р»СЊРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ СЃРѕСЃС‚РѕСЏРЅРёР№ РёР· С„Р°Р№Р»Р°
     private Dictionary<string, JObject> masterStateFromFile;
 
-    // Временное хранилище состояний для текущей сессии
+    // Р’СЂРµРјРµРЅРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ СЃРѕСЃС‚РѕСЏРЅРёР№ РґР»СЏ С‚РµРєСѓС‰РµР№ СЃРµСЃСЃРёРё
     private Dictionary<string, Dictionary<string, object>> temporarySceneStates = new Dictionary<string, Dictionary<string, object>>();
 
     private bool isInitialLoadAfterFile = false;
@@ -60,7 +60,7 @@ public class SaveManager : MonoBehaviour
     {
         string sceneName = SceneManager.GetActiveScene().name;
         temporarySceneStates[sceneName] = CaptureCurrentState();
-        Debug.Log($"Состояние сцены '{sceneName}' сохранено во временное хранилище.");
+        Debug.Log($"РЎРѕСЃС‚РѕСЏРЅРёРµ СЃС†РµРЅС‹ '{sceneName}' СЃРѕС…СЂР°РЅРµРЅРѕ РІРѕ РІСЂРµРјРµРЅРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ.");
     }
 
     public void SaveToFile()
@@ -68,9 +68,15 @@ public class SaveManager : MonoBehaviour
         var saveData = new SaveData();
         saveData.sceneName = SceneManager.GetActiveScene().name;
 
-        var finalState = masterStateFromFile != null
-            ? masterStateFromFile.ToDictionary(kvp => kvp.Key, kvp => (object)kvp.Value)
-            : new Dictionary<string, object>();
+        var finalState = new Dictionary<string, object>();
+
+        if (masterStateFromFile != null)
+        {
+            foreach (var pair in masterStateFromFile)
+            {
+                finalState[pair.Key] = pair.Value;
+            }
+        }
 
         foreach (var sceneState in temporarySceneStates.Values)
         {
@@ -94,7 +100,7 @@ public class SaveManager : MonoBehaviour
         masterStateFromFile = finalState.ToDictionary(kvp => kvp.Key, kvp => JObject.FromObject(kvp.Value));
         temporarySceneStates.Clear();
 
-        Debug.Log("Игра сохранена в файл (включая все посещенные локации).");
+        Debug.Log("РРіСЂР° СЃРѕС…СЂР°РЅРµРЅР° РІ С„Р°Р№Р» (РІРєР»СЋС‡Р°СЏ РІСЃРµ РїРѕСЃРµС‰РµРЅРЅС‹Рµ Р»РѕРєР°С†РёРё).");
     }
 
     public void LoadFromFile()
@@ -102,13 +108,13 @@ public class SaveManager : MonoBehaviour
         string path = GetSavePath();
         if (!File.Exists(path))
         {
-            Debug.LogWarning("Файл сохранения не найден!");
+            Debug.LogWarning("Р¤Р°Р№Р» СЃРѕС…СЂР°РЅРµРЅРёСЏ РЅРµ РЅР°Р№РґРµРЅ!");
             return;
         }
 
         temporarySceneStates.Clear();
         isInitialLoadAfterFile = true;
-        Debug.Log("Временное хранилище сцен очищено. Начата загрузка из файла.");
+        Debug.Log("Р’СЂРµРјРµРЅРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ СЃС†РµРЅ РѕС‡РёС‰РµРЅРѕ. РќР°С‡Р°С‚Р° Р·Р°РіСЂСѓР·РєР° РёР· С„Р°Р№Р»Р°.");
 
         string jsonString = File.ReadAllText(path);
         var saveData = JsonConvert.DeserializeObject<SaveData>(jsonString);
@@ -121,28 +127,27 @@ public class SaveManager : MonoBehaviour
         SceneManager.LoadScene(saveData.sceneName);
     }
 
-    // --- ПОЛНОСТЬЮ ПЕРЕРАБОТАННАЯ ЛОГИКА ЗАГРУЗКИ СЦЕНЫ ---
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         string currentSceneName = scene.name;
 
-        // 1. Собираем "мировое" состояние, объединяя данные из файла и временной памяти.
+        // 1. РЎРѕР±РёСЂР°РµРј "РјРёСЂРѕРІРѕРµ" СЃРѕСЃС‚РѕСЏРЅРёРµ, РѕР±СЉРµРґРёРЅСЏСЏ РґР°РЅРЅС‹Рµ РёР· С„Р°Р№Р»Р° Рё РІСЂРµРјРµРЅРЅРѕР№ РїР°РјСЏС‚Рё.
         var worldState = masterStateFromFile != null
             ? new Dictionary<string, JObject>(masterStateFromFile)
             : new Dictionary<string, JObject>();
 
-        foreach (var sceneData in temporarySceneStates.Values)
+        if (temporarySceneStates.TryGetValue(currentSceneName, out var sceneData))
         {
             var tempJObjectData = sceneData.ToDictionary(kvp => kvp.Key, kvp => JObject.FromObject(kvp.Value));
             foreach (var pair in tempJObjectData)
             {
-                worldState[pair.Key] = pair.Value; // Перезаписываем, так как временные данные свежее
+                worldState[pair.Key] = pair.Value; // РџРµСЂРµР·Р°РїРёСЃС‹РІР°РµРј, С‚Р°Рє РєР°Рє РІСЂРµРјРµРЅРЅС‹Рµ РґР°РЅРЅС‹Рµ СЃРІРµР¶РµРµ
             }
         }
 
         if (worldState.Count == 0) return;
 
-        // 2. Фильтруем мировое состояние, чтобы получить данные ТОЛЬКО для текущей сцены и "вечных" объектов.
+        // 2. Р¤РёР»СЊС‚СЂСѓРµРј РјРёСЂРѕРІРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ, С‡С‚РѕР±С‹ РїРѕР»СѓС‡РёС‚СЊ РґР°РЅРЅС‹Рµ РўРћР›Р¬РљРћ РґР»СЏ С‚РµРєСѓС‰РµР№ СЃС†РµРЅС‹ Рё "РІРµС‡РЅС‹С…" РѕР±СЉРµРєС‚РѕРІ.
         var sceneSpecificState = new Dictionary<string, JObject>();
         foreach (var pair in worldState)
         {
@@ -150,7 +155,7 @@ public class SaveManager : MonoBehaviour
             if (wrapper.TryGetValue("sceneName", out JToken sceneNameToken))
             {
                 string savedSceneName = sceneNameToken.ToString();
-                // Объект принадлежит нам, если его сцена совпадает с текущей ИЛИ если он "вечный" (DontDestroyOnLoad)
+                // РћР±СЉРµРєС‚ РїСЂРёРЅР°РґР»РµР¶РёС‚ РЅР°Рј, РµСЃР»Рё РµРіРѕ СЃС†РµРЅР° СЃРѕРІРїР°РґР°РµС‚ СЃ С‚РµРєСѓС‰РµР№ РР›Р РµСЃР»Рё РѕРЅ "РІРµС‡РЅС‹Р№" (DontDestroyOnLoad)
                 if (savedSceneName == currentSceneName || savedSceneName == "DontDestroyOnLoad")
                 {
                     sceneSpecificState[pair.Key] = pair.Value;
@@ -158,10 +163,10 @@ public class SaveManager : MonoBehaviour
             }
         }
 
-        // 3. Восстанавливаем сцену, используя только отфильтрованные данные.
+        // 3. Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃС†РµРЅСѓ, РёСЃРїРѕР»СЊР·СѓСЏ С‚РѕР»СЊРєРѕ РѕС‚С„РёР»СЊС‚СЂРѕРІР°РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ.
         bool allowCreation = isInitialLoadAfterFile || temporarySceneStates.ContainsKey(currentSceneName);
         RestoreStateFromData(sceneSpecificState, isInitialLoadAfterFile, allowCreation);
-        Debug.Log($"Состояние для сцены '{currentSceneName}' восстановлено.");
+        Debug.Log($"РЎРѕСЃС‚РѕСЏРЅРёРµ РґР»СЏ СЃС†РµРЅС‹ '{currentSceneName}' РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРѕ.");
 
         isInitialLoadAfterFile = false;
     }
@@ -197,17 +202,16 @@ public class SaveManager : MonoBehaviour
         return state;
     }
 
-    // --- УПРОЩЕННАЯ ЛОГИКА ВОССТАНОВЛЕНИЯ ---
     private void RestoreStateFromData(Dictionary<string, JObject> stateDataForScene, bool isFullFileLoad, bool allowCreation)
     {
         var sceneEntities = FindObjectsOfType<SaveableEntity>(false).ToDictionary(e => e.GetUniqueIdentifier());
 
-        // Проход 1: Обновляем существующие объекты и ищем те, что нужно удалить.
+        // РџСЂРѕС…РѕРґ 1: РћР±РЅРѕРІР»СЏРµРј СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёРµ РѕР±СЉРµРєС‚С‹ Рё РёС‰РµРј С‚Рµ, С‡С‚Рѕ РЅСѓР¶РЅРѕ СѓРґР°Р»РёС‚СЊ.
         foreach (var entity in sceneEntities.Values.ToList())
         {
             string id = entity.GetUniqueIdentifier();
 
-            // Не трогаем игрока при обычном переходе между сценами, чтобы не "откатить" инвентарь.
+            // РќРµ С‚СЂРѕРіР°РµРј РёРіСЂРѕРєР° РїСЂРё РѕР±С‹С‡РЅРѕРј РїРµСЂРµС…РѕРґРµ РјРµР¶РґСѓ СЃС†РµРЅР°РјРё, С‡С‚РѕР±С‹ РЅРµ "РѕС‚РєР°С‚РёС‚СЊ" РёРЅРІРµРЅС‚Р°СЂСЊ.
             if (!isFullFileLoad && entity.gameObject.scene.buildIndex == -1)
             {
                 sceneEntities.Remove(id);
@@ -216,7 +220,7 @@ public class SaveManager : MonoBehaviour
 
             if (stateDataForScene.TryGetValue(id, out JObject objectState))
             {
-                // Если объект есть в сохранении, восстанавливаем его.
+                // Р•СЃР»Рё РѕР±СЉРµРєС‚ РµСЃС‚СЊ РІ СЃРѕС…СЂР°РЅРµРЅРёРё, РІРѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј РµРіРѕ.
                 var wrapper = objectState.ToObject<Dictionary<string, JToken>>();
                 var components = wrapper["components"].ToObject<Dictionary<string, JToken>>();
                 foreach (var saveableComponent in entity.GetComponents<ISaveable>())
@@ -226,12 +230,12 @@ public class SaveManager : MonoBehaviour
                         saveableComponent.RestoreState(state);
                     }
                 }
-                sceneEntities.Remove(id); // Убираем из словаря, так как он обработан.
+                sceneEntities.Remove(id); // РЈР±РёСЂР°РµРј РёР· СЃР»РѕРІР°СЂСЏ, С‚Р°Рє РєР°Рє РѕРЅ РѕР±СЂР°Р±РѕС‚Р°РЅ.
             }
         }
 
-        // Все, что осталось в sceneEntities - это объекты, которых нет в сохранении (т.е. подобраны).
-        // Уничтожаем их.
+        // Р’СЃРµ, С‡С‚Рѕ РѕСЃС‚Р°Р»РѕСЃСЊ РІ sceneEntities - СЌС‚Рѕ РѕР±СЉРµРєС‚С‹, РєРѕС‚РѕСЂС‹С… РЅРµС‚ РІ СЃРѕС…СЂР°РЅРµРЅРёРё (С‚.Рµ. РїРѕРґРѕР±СЂР°РЅС‹).
+        // РЈРЅРёС‡С‚РѕР¶Р°РµРј РёС….
         foreach (var entity in sceneEntities.Values)
         {
             if (entity.GetComponent<ItemPickup>() != null)
@@ -240,7 +244,7 @@ public class SaveManager : MonoBehaviour
             }
         }
 
-        // Проход 2: Создаем объекты, которые есть в сохранении, но нет на сцене (т.е. выложены).
+        // РџСЂРѕС…РѕРґ 2: РЎРѕР·РґР°РµРј РѕР±СЉРµРєС‚С‹, РєРѕС‚РѕСЂС‹Рµ РµСЃС‚СЊ РІ СЃРѕС…СЂР°РЅРµРЅРёРё, РЅРѕ РЅРµС‚ РЅР° СЃС†РµРЅРµ (С‚.Рµ. РІС‹Р»РѕР¶РµРЅС‹).
         if (allowCreation)
         {
             var existingIdsOnScene = new HashSet<string>(FindObjectsOfType<SaveableEntity>(false).Select(e => e.GetUniqueIdentifier()));
@@ -248,7 +252,7 @@ public class SaveManager : MonoBehaviour
             foreach (var savedState in stateDataForScene)
             {
                 string id = savedState.Key;
-                if (existingIdsOnScene.Contains(id)) continue; // Уже существует, пропуск.
+                if (existingIdsOnScene.Contains(id)) continue; // РЈР¶Рµ СЃСѓС‰РµСЃС‚РІСѓРµС‚, РїСЂРѕРїСѓСЃРє.
 
                 var wrapper = savedState.Value.ToObject<Dictionary<string, JToken>>();
                 var components = wrapper["components"].ToObject<Dictionary<string, JToken>>();

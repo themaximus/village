@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fa6d513d946e324c97b50fdd1a25065, type: 3}
+  m_Name: NPC_Antonchik
+  m_EditorClassIdentifier: 
+  npcName: Antonchik
+  myFaction: {fileID: 11400000, guid: 3b814d0c9ca7bb34b9d9a72a2f05cb31, type: 2}
+  behavior: 1
+  moveSpeed: 2
+  movementPattern: 1
+  patrolRadius: 10
+  detectionRadius: 8
+  attackRadius: 0.69
+  attackDamage: 10
+  attackCooldown: 0.5
+  animationFrameRate: 0.2
+  attackAnimationFrameRate: 0.1
+  idleNorth:
+  - {fileID: -1257835556, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  idleEast:
+  - {fileID: 1672203568, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  idleSouth:
+  - {fileID: -27618831, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  idleWest:
+  - {fileID: 836498735, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  moveNorth:
+  - {fileID: -1158228436, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  - {fileID: 1852342924, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  - {fileID: -1201482898, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  - {fileID: 1557981741, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  - {fileID: 1176982075, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  - {fileID: 1021399745, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  moveEast:
+  - {fileID: -1065433467, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  - {fileID: 1118041916, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  - {fileID: -670165775, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  - {fileID: 1721875123, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  - {fileID: 769226705, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  - {fileID: 543524989, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  moveSouth:
+  - {fileID: 530413460, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  - {fileID: 473523288, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  - {fileID: -732511155, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  - {fileID: -27079757, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  - {fileID: -292428182, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  - {fileID: -1503458999, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  moveWest:
+  - {fileID: 1786503692, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  - {fileID: -481208149, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  - {fileID: -952813770, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  - {fileID: -1477512095, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  - {fileID: -817632513, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  - {fileID: -430320612, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  attackNorth:
+  - {fileID: 1088382649, guid: f485dcfc38a45364e81c3d38dc9e27c6, type: 3}
+  - {fileID: 1994287107, guid: f485dcfc38a45364e81c3d38dc9e27c6, type: 3}
+  - {fileID: -147915078, guid: f485dcfc38a45364e81c3d38dc9e27c6, type: 3}
+  attackEast:
+  - {fileID: 606767431, guid: 4a320a432effe9b47956dac8f9216e82, type: 3}
+  - {fileID: -610395281, guid: 4a320a432effe9b47956dac8f9216e82, type: 3}
+  - {fileID: 2015479865, guid: 4a320a432effe9b47956dac8f9216e82, type: 3}
+  attackSouth:
+  - {fileID: -1027939969, guid: 06cc04445f0fcf84c942397d03fea063, type: 3}
+  - {fileID: 240242062, guid: 06cc04445f0fcf84c942397d03fea063, type: 3}
+  - {fileID: 1583098802, guid: 06cc04445f0fcf84c942397d03fea063, type: 3}
+  attackWest:
+  - {fileID: -1552228617, guid: 1ab6ca8388f153b428986bcede293d12, type: 3}
+  - {fileID: -908859322, guid: 1ab6ca8388f153b428986bcede293d12, type: 3}
+  - {fileID: 987802064, guid: 1ab6ca8388f153b428986bcede293d12, type: 3}
+  deathAnimation:
+  - {fileID: 1335310544, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  - {fileID: 1238539442, guid: 66f04624fc56ba4438413f55b3d92ac2, type: 3}
+  deathAnimationDuration: 1
